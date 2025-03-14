@@ -9,17 +9,17 @@ class WeatherView(QMainWindow):
 
     def __init__(self):
         super().__init__()
-
         # Парметры окна
+        self.initUI()
+
+    def initUI(self):
         self.setWindowTitle('Погода')
         self.setGeometry(2500, 300, 300, 350)
         self.setFixedSize(300, 350)
+        
+        self.createWidgets()
 
-        self.createUI()
-        self.apply_connections()
-        self.add_new_tab()
-
-    def createUI(self):
+    def createWidgets(self):
         # Widgets
         self.tabs = QTabWidget()
         self.tabs.setTabsClosable(True)
@@ -46,7 +46,8 @@ class WeatherView(QMainWindow):
         self.setCentralWidget(central_widget)
 
         
-    def apply_connections(self):
+    def connectSignals(self, presenter):
+        self.presenter = presenter
         self.tabs.tabCloseRequested.connect(self.remove_tab_by_index)
         self.remove_button.clicked.connect(self.remove_tab)
         self.add_button.clicked.connect(self.add_new_tab)
@@ -59,7 +60,7 @@ class WeatherView(QMainWindow):
         self.add_tab(tab_name)
 
     def add_tab(self, tab_name):
-        tab = WeatherWidget(tab_name)
+        tab = WeatherWidget(tab_name, self.presenter)
         self.tabs.addTab(tab, tab_name)
 
     def remove_tab(self):
@@ -95,7 +96,9 @@ class WeatherView(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication([])
-    window = WeatherView()
+    from presenter.weather_presenter import WeatherPresenter
+    o = WeatherPresenter()
+    window = WeatherView(o)
     window.show()
     app.exec()
 

@@ -12,10 +12,19 @@ class WeatherModel:
         self.__units = 'metric'
         self.__lang = 'ru'
 
+        with open('city_list/city.list.json', encoding='utf-8') as file:
+            self.cities = json.load(file)
+
+    def find_city(self, city_name):
+        city_name = " ".join(city_name)
+        for city in self.cities:
+            if city['name'].lower() == city_name.lower():
+                return city['id']
 
     def __get_weather(self, city):
+        id = self.find_city(city)
         params = {
-            'q': city,
+            'id': id,
             'appid': self.__appid,
             'units': self.__units,
             'lang': self.__lang,
@@ -39,9 +48,9 @@ class WeatherModel:
         except requests.exceptions.RequestException as e:
             return {"error": f"Ошибка запроса: {e}"}
         
-        
         if data:
             city = data['name']
+            country = data['sys']['country']
             temperature = data['main']['temp']
             weather_description = data['weather'][0]['description']
             humidity = data['main']['humidity']
@@ -49,6 +58,7 @@ class WeatherModel:
 
             return {
                 'city': city,
+                'country': country,
                 'temperature': temperature,
                 'weather_description': weather_description,
                 'humidity': humidity,

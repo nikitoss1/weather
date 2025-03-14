@@ -1,4 +1,6 @@
 venv
-main.py
 config/token.py
 test.py
+**/__pycache__/
+*.pyc
+*.pyo

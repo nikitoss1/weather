@@ -3,19 +3,22 @@ import json
 import logging
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QInputDialog, QMenu, QTabWidget, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QTextBrowser
 from PyQt6.QtCore import Qt
-
+from PyQt6.QtGui import QKeyEvent
+from pprint import pprint
 
 class WeatherWidget(QWidget):
     
-    def __init__(self, tab_name):
+    def __init__(self, tab_name, presenter):
         # Инит
         super().__init__()
         self.tab_name = tab_name
-        self.createUI()
-        self.create_connections()
+        self.presenter = presenter
+        self.initUI()
+        self.connectSignals()
 
-    def createUI(self):
+    def initUI(self):
         # Виджеты
+        
         self.input_city = QLineEdit()
         self.input_city.setPlaceholderText('Введите город')
 
@@ -34,6 +37,21 @@ class WeatherWidget(QWidget):
 
         self.setLayout(main_layout)
 
-    def create_connections(self):
-        pass
-        #self.enter_button.clicked.connect(self.search_weathers)
+    def connectSignals(self):
+        self.enter_button.clicked.connect(self.search_weather)
+
+    def search_weather(self):
+        city = self.input_city.text().split()
+        if city == '':
+            return
+        data = self.presenter.search_weather(city)
+        self.display_data(data)
+
+    def display_data(self, data: dict):
+        self.description_weather.clear()
+        for k, v in data.items():
+            self.description_weather.append(f'{k} - {v}')
+    
+    def keyPressEvent(self, event):
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            self.enter_button.click()
