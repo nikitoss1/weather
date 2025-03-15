@@ -14,6 +14,7 @@ class TestWeatherModel(unittest.TestCase):
         mock_response.status_code = 200
         mock_response.json.return_value = {
             "name": "Москва",
+            "sys": {"country": "RU"},
             "main": {"temp": 25, "humidity": 60},
             "weather": [{"description": "ясно"}],
             "wind": {"speed": 3.5}
@@ -24,6 +25,7 @@ class TestWeatherModel(unittest.TestCase):
         result = self.weather.check_weather('Москва')
         self.assertIn("city", result)
         self.assertEqual(result["city"], "Москва")
+        self.assertEqual(result['country'], "RU")
         self.assertEqual(result["temperature"], 25)
         self.assertEqual(result["weather_description"], "ясно")
         self.assertEqual(result["humidity"], 60)

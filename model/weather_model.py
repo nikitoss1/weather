@@ -1,5 +1,6 @@
 import requests
 import json
+from googletrans import Translator
 from config.token import API_KEY
 from config.link_api_weather import BASE_URL
 from pprint import pprint
@@ -11,6 +12,7 @@ class WeatherModel:
         self.__appid = API_KEY
         self.__units = 'metric'
         self.__lang = 'ru'
+        self.translator = Translator()
 
         with open('city_list/city.list.json', encoding='utf-8') as file:
             self.cities = json.load(file)
@@ -41,6 +43,7 @@ class WeatherModel:
             )        
     
     def check_weather(self, city):
+        city[0] = self.translator.translate(city[0], dest='en').text
         try:
             data = self.__get_weather(city)
         except requests.exceptions.HTTPError as e:
